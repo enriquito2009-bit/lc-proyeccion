@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e0561a">
+<title>Proyección de Pizzas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1 id="storeName">Proyección de Pizzas</h1>
+    <div class="sub" id="sub"></div>
+  </div>
+  <input type="date" id="fecha" aria-label="Fecha">
+</header>
+
+<main id="vHoy">
+  <section class="card hero" aria-live="polite">
+    <div class="lbl">Total proyectado del día</div>
+    <div class="big" id="big">–</div>
+    <div class="range" id="range"></div>
+    <div class="pill" id="pill">Captura tu primera hora</div>
+    <div class="stats">
+      <div class="stat"><b id="sAcum">–</b><span>Vendidas</span></div>
+      <div class="stat"><b id="sRest">–</b><span>Por vender</span></div>
+      <div class="stat"><b id="sRitmo">–</b><span>Ritmo vs normal</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Venta acumulada <small>Total acumulado al cerrar el horario</small></h2>
+    <form class="entry" id="form">
+      <label>Horario<select id="hora"></select></label>
+      <label>Pizzas acumuladas<input id="val" type="number" inputmode="numeric" min="0" step="1" placeholder="0" autocomplete="off"></label>
+      <button class="btn" type="submit">Listo</button>
+    </form>
+    <div class="msg" id="msg" role="status"></div>
+    <div class="chips" id="chips"></div>
+    <div class="note" style="margin-top:6px">Toca una hora capturada para corregirla.</div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Pizzas esperadas por hora <small id="restSub"></small></h2>
+    <div class="hrs" id="hrs"></div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Curva del día <small>acumulado</small></h2>
+    <svg viewBox="0 0 340 170" role="img" aria-label="Curva de venta acumulada" id="svg"></svg>
+    <div class="note">Gris punteado: curva normal con el pronóstico. Naranja: lo que llevas y hacia dónde va.</div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Próximos 7 días <small>pronóstico</small></h2>
+    <div class="week" id="week"></div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Ajustes del día</summary>
+      <div class="set">
+        <label>Pronóstico manual del día<input id="manual" type="number" inputmode="numeric" placeholder="auto"></label>
+        <label>Alerta si el ritmo se desvía más de (%)<input id="thr" type="number" inputmode="numeric"></label>
+        <div class="note" id="src"></div>
+        <button class="link" id="reset" type="button">Borrar capturas de este día</button>
+      </div>
+    </details>
+  </section>
+</main>
+
+<main id="vTienda" hidden>
+  <section class="card">
+    <h2 class="h2">Tienda activa</h2>
+    <div class="row">
+      <select id="selStore" aria-label="Tienda"></select>
+      <button class="btn small" id="btnNew" type="button">+ Nueva</button>
+    </div>
+    <label class="field">Nombre de la tienda<input id="inName" type="text" autocomplete="off"></label>
+    <div class="note" id="profNote"></div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Paso 1 · Historial diario <small>pronóstico del total</small></h2>
+    <p class="note">Pega una línea por día: fecha y pizzas totales (de Analytix, categoría HNR). Sirven <code>2026-11-17,622</code> o <code>17/11/2026 622</code>. Entre 8 y 12 semanas es lo ideal.</p>
+    <textarea id="taDaily" rows="6" placeholder="2026-11-10,679&#10;2026-11-11,698&#10;2026-11-12,860"></textarea>
+    <label class="check"><input type="checkbox" id="ckAuto" checked> Ignorar días atípicos (más de 30% fuera de lo normal)</label>
+    <label class="field">Fechas a excluir (falla de sistema, evento) <input id="inExcl" type="text" placeholder="2026-07-28, 2026-12-25"></label>
+    <button class="btn" id="btnDaily" type="button">Calcular pronóstico</button>
+    <div class="out" id="outDaily"></div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Paso 2 · Curva por hora <small>cuándo se vende</small></h2>
+    <p class="note">En LCE Gateway abre Managing Report, pestaña Round Pizza, elige una fecha de ese día de la semana y copia la tabla completa. Pégala en el día que corresponde. La app toma la columna <b>4 Week Avg</b>. Con un solo día ya funciona; los demás se estiman.</p>
+    <div id="curveBoxes"></div>
+    <button class="btn" id="btnCurve" type="button">Calcular curva</button>
+    <div class="out" id="outCurve"></div>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">Compartir con otra tienda o dispositivo</h2>
+    <p class="note">El enlace lleva la configuración (no las capturas del día). Quien lo abra puede guardarla como una tienda nueva.</p>
+    <div class="row wrap">
+      <button class="btn small" id="btnLink" type="button">Copiar enlace</button>
+      <button class="btn small ghost" id="btnExport" type="button">Copiar configuración (JSON)</button>
+    </div>
+    <textarea id="taImport" rows="3" placeholder="Pega aquí una configuración (JSON) para importarla"></textarea>
+    <div class="row wrap">
+      <button class="btn small ghost" id="btnImport" type="button">Importar</button>
+      <button class="btn small ghost" id="btnDemo" type="button">Cargar ejemplo Garbancera</button>
+    </div>
+    <div class="msg" id="msgShare" role="status"></div>
+  </section>
+
+  <section class="card">
+    <button class="link danger" id="btnDelete" type="button">Eliminar esta tienda</button>
+  </section>
+</main>
+
+<div class="banner" id="banner" hidden></div>
+
+<nav class="tabs" aria-label="Secciones">
+  <button id="tabHoy" aria-current="page">Hoy</button>
+  <button id="tabTienda">Tienda</button>
+</nav>
+
+<script src="app.js"></script>
+<script>if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
