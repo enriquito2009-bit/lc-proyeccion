@@ -27,3 +27,10 @@ Más detalle del método y de cómo adaptarlo: `docs/GUIA_TIENDAS.md`.
 
 ## Días especiales
 Cada tienda puede traer `events` (fecha → nombre y factor). El pronóstico de esa fecha se multiplica por el factor y la pantalla Hoy muestra el nombre del evento y ★ en la semana. El preset de Garbancera incluye posadas, Guadalupe, Navidad, Año Nuevo y Reyes.
+
+## Reentrenar el modelo (tools/)
+1. `tools/analytix_descarga.js`: pégalo en la consola de Analytix 360; baja ventas por día (clientes y pizzas Round Pizza).
+2. Agrega esas líneas a `tools/historial_garbancera.csv` (columnas `d,cli,q1`).
+3. `python3 tools/actualizar_modelo.py` reentrena con todo el historial (2022 en adelante), pronostica 70 días y recalcula los factores de días especiales (solo los consistentes entre años). Salida: `tools/salida_modelo.json`.
+4. Copia `hw` a `dayF` y `events` a `events` en `presets/garbancera.json`.
+Probado en 52 semanas: error diario 7.1% con 4 años de historial, contra 7.3% con 1 año y 7.8% con el promedio de 4 semanas.

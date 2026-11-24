@@ -5,7 +5,7 @@ Le dice al gerente, durante el día, cuántas pizzas va a vender en total y si v
 
 `Proyección = vendido hasta ahora + pronóstico del día × (1 − % del día que normalmente ya se vendió a esta hora)`
 
-Ejemplo: martes, pronóstico 637, a las 15:00 en punto llevas 215 y normalmente a esa hora ya se vendió 39%. Proyección = 215 + 637 × 0.61 ≈ 604. Si el ritmo real (215 contra 0.39 × 637 = 248) está más de 15% abajo, la señal dice BAJAR producción.
+Ejemplo: martes, pronóstico 647, a las 15:00 en punto llevas 215 y normalmente a esa hora ya se vendió 39%. Proyección = 215 + 647 × 0.61 ≈ 610. Si el ritmo real (215 contra 0.39 × 647 = 252) está más de 15% abajo, la señal dice BAJAR producción.
 
 ## Los dos datos que necesita
 1. **Total de pizzas por día**, de 8 a 12 semanas (Analytix 360, Product Mix Diario, categoría HNR). Con eso se saca el pronóstico: promedio de los últimos 4 mismos días de la semana. Los días raros (falla de sistema, Navidad, Día del Niño) se ignoran solos si se desvían más de 30%, o se excluyen por fecha.

@@ -18,7 +18,7 @@ App estática (HTML + CSS + JS sin dependencias ni paso de compilación). Españ
 - Tabla de Gateway: la columna "4 Week Avg" es la única con un decimal; así se distingue de Amount / Previous Week / Scheduled.
 
 - Días especiales: `profile.events = {fecha: {n, f}}`; `baseFor()` multiplica el pronóstico base por f (no aplica al ajuste manual). Factores 2025 (Navidad 0.49, posadas 1.16–1.40 entre semana, etc.) con un solo año de datos: son guía. Lluvia no se ajusta (sin efecto consistente).
-- Preset Garbancera: pronóstico guardado 24-nov a 7-dic-2026; ejemplo de prueba = 604 (martes 24-nov, capturas 20/45/80/120/170/215).
+- Preset Garbancera: pronóstico guardado 24-nov a 31-dic-2026 (HW con 4 años); ejemplo de prueba cambia al reentrenar: corre tests/e2e.py y actualiza el número esperado (hoy 610).
 
 ## Siguientes pasos posibles
 1. **Sincronizar capturas entre dispositivos:** agregar un backend pequeño (Supabase, Firebase o un Worker de Cloudflare con KV) y guardar `caps` por tienda y fecha.

@@ -48,10 +48,10 @@ with sync_playwright() as p:
     pg.click("#btnDemo"); pg.wait_for_timeout(300); pg.click("#tabHoy"); pg.fill("#fecha", "2026-11-24"); pg.dispatch_event("#fecha", "change")
     for h, v in [(10, 20), (11, 45), (12, 80), (13, 120), (14, 170), (15, 215)]:
         pg.select_option("#hora", str(h)); pg.fill("#val", str(v)); pg.press("#val", "Enter")
-    check("ejemplo Garbancera = 604 (igual que el dashboard)", pg.inner_text("#big") == "604", pg.inner_text("#big") + " " + pg.inner_text("#range"))
+    check("ejemplo Garbancera = 610 (igual que el dashboard)", pg.inner_text("#big") == "610", pg.inner_text("#big") + " " + pg.inner_text("#range"))
     # día especial: jueves 17-dic (posadas, +38%) sin capturas
     pg.fill("#fecha", "2026-12-17"); pg.dispatch_event("#fecha", "change")
-    check("día especial aplica factor (base 832 x 1.38 = 1148)", pg.inner_text("#big") == "1,148" or pg.inner_text("#big") == "1148", pg.inner_text("#big") + " | " + pg.inner_text("#sub"))
+    check("día especial aplica factor (base 818 x 1.16 = 949)", pg.inner_text("#big") == "949", pg.inner_text("#big") + " | " + pg.inner_text("#sub"))
     check("muestra nombre del evento", "Posadas" in pg.inner_text("#sub"))
     check("sin desbordar a lo ancho", pg.evaluate("document.documentElement.scrollWidth") <= 390)
     pg.screenshot(path="/home/claude/lc-proyeccion/tests/hoy.png", full_page=True)
