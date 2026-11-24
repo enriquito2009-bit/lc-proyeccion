@@ -23,3 +23,7 @@ Con el enlace en el celular: Compartir › "Agregar a pantalla de inicio" (iPhon
 `python3 -m http.server 8765` dentro de esta carpeta y abre http://localhost:8765. Para la prueba automática: `python3 tests/e2e.py` (necesita Playwright y el historial de ejemplo).
 
 Más detalle del método y de cómo adaptarlo: `docs/GUIA_TIENDAS.md`.
+
+
+## Días especiales
+Cada tienda puede traer `events` (fecha → nombre y factor). El pronóstico de esa fecha se multiplica por el factor y la pantalla Hoy muestra el nombre del evento y ★ en la semana. El preset de Garbancera incluye posadas, Guadalupe, Navidad, Año Nuevo y Reyes.

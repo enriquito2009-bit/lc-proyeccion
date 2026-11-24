@@ -92,12 +92,18 @@ function cumFrom(vals) {
 }
 
 /* ---------- proyección ---------- */
+function baseFor(p, date) {
+  const dow = dowOf(date); let v = null, src = null;
+  if (p.dayF && p.dayF[date] != null) { v = p.dayF[date]; src = "pronóstico guardado para esa fecha"; }
+  else if (p.base && p.base[dow]) { v = p.base[dow]; src = "promedio de 4 semanas del " + DL[dow].toLowerCase(); }
+  if (v == null) return { v: null, src: "sin pronóstico: escribe uno manual o carga el historial (Tienda › Paso 1)" };
+  const ev = p.events && p.events[date];
+  if (ev && ev.f > 0) { const pc = Math.round((ev.f - 1) * 100); return { v: Math.round(v * ev.f), src: src + " " + (pc >= 0 ? "+" : "") + pc + "% por " + ev.n, ev }; }
+  return { v, src };
+}
 function forecastFor(p, date) {
-  const dow = dowOf(date);
   if (S.manual > 0) return { v: +S.manual, src: "manual" };
-  if (p.dayF && p.dayF[date] != null) return { v: p.dayF[date], src: "pronóstico guardado para esa fecha" };
-  if (p.base && p.base[dow]) return { v: p.base[dow], src: "promedio de 4 semanas del " + DL[dow].toLowerCase() };
-  return { v: null, src: "sin pronóstico: escribe uno manual o carga el historial (Tienda › Paso 1)" };
+  return baseFor(p, date);
 }
 function calc() {
   const p = P(), dow = dowOf(S.date), F = forecastFor(p, S.date), cv = p.curve[dow];
@@ -116,7 +122,7 @@ function calc() {
 function renderHoy() {
   const p = P(), r = calc(), dow = r.dow;
   $("storeName").textContent = p.name;
-  $("sub").textContent = DL[dow] + (r.F.v != null ? " · base " + fmt(r.F.v) + " pizzas" : " · sin pronóstico");
+  $("sub").textContent = DL[dow] + (r.F.v != null ? " · base " + fmt(r.F.v) + " pizzas" + (r.F.ev ? " · " + r.F.ev.n : "") : " · sin pronóstico");
   $("fecha").value = S.date;
   const pill = $("pill"); pill.className = "pill";
   const base = r.F.v != null ? r.F.v : null;
@@ -157,9 +163,9 @@ function renderHoy() {
   }
   const wk = $("week"); wk.innerHTML = "";
   for (let i = 0; i < 7; i++) {
-    const k = addDays(S.date, i), dw = dowOf(k), v = (p.dayF && p.dayF[k] != null) ? p.dayF[k] : p.base[dw];
+    const k = addDays(S.date, i), dw = dowOf(k), bf = baseFor(p, k), v = bf.v;
     const b = document.createElement("button"); b.className = "day"; b.type = "button"; b.setAttribute("aria-pressed", k === S.date);
-    b.innerHTML = DN[dw] + "<b>" + (v != null ? fmt(v) : "–") + "</b>" + (+k.slice(8));
+    b.innerHTML = DN[dw] + "<b>" + (v != null ? fmt(v) : "–") + "</b>" + (+k.slice(8)) + (bf.ev ? " ★" : "");
     b.onclick = () => { S.date = k; loadCaps(); initHoy(); }; wk.appendChild(b);
   }
   $("src").textContent = "Pronóstico usado: " + (r.F.v != null ? fmt(r.F.v) + " (" + r.F.src + ")" : r.F.src);
@@ -239,7 +245,7 @@ function runCurve() {
 }
 
 /* ---------- compartir ---------- */
-const exportData = p => ({ name: p.name, curve: Object.fromEntries(Object.entries(p.curve).map(([k, v]) => [k, v.map(x => +(+x).toFixed(4))])), base: p.base, dayF: p.dayF || {}, mape: p.mape, thr: p.thr, note: p.note || "" });
+const exportData = p => ({ name: p.name, curve: Object.fromEntries(Object.entries(p.curve).map(([k, v]) => [k, v.map(x => +(+x).toFixed(4))])), base: p.base, dayF: p.dayF || {}, events: p.events || {}, mape: p.mape, thr: p.thr, note: p.note || "" });
 function validate(o) {
   if (!o || typeof o !== "object" || !o.curve || !o.base) return "Falta curve o base.";
   for (let d = 1; d <= 7; d++) { const c = o.curve[d]; if (!Array.isArray(c) || c.length !== NH || c.some(x => typeof x !== "number" || !isFinite(x))) return "La curva del día " + d + " no es válida."; }
@@ -253,7 +259,7 @@ const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").repl
 const b64d = s => decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
 function importObj(o, say) {
   const err = validate(o); if (err) { say("No pude importar: " + err); return false; }
-  newProfile(o.name || "Tienda importada", { curve: o.curve, base: o.base, dayF: o.dayF || {}, mape: o.mape || DEFAULT_MAPE, thr: o.thr || 15, note: o.note || "", src: {} });
+  newProfile(o.name || "Tienda importada", { curve: o.curve, base: o.base, dayF: o.dayF || {}, events: o.events || {}, mape: o.mape || DEFAULT_MAPE, thr: o.thr || 15, note: o.note || "", src: {} });
   return true;
 }
 

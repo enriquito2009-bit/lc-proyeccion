@@ -17,11 +17,14 @@ App estática (HTML + CSS + JS sin dependencias ni paso de compilación). Españ
 - Las capturas nunca se bloquean: solo avisa "Ojo" si el número rompe el orden.
 - Tabla de Gateway: la columna "4 Week Avg" es la única con un decimal; así se distingue de Amount / Previous Week / Scheduled.
 
+- Días especiales: `profile.events = {fecha: {n, f}}`; `baseFor()` multiplica el pronóstico base por f (no aplica al ajuste manual). Factores 2025 (Navidad 0.49, posadas 1.16–1.40 entre semana, etc.) con un solo año de datos: son guía. Lluvia no se ajusta (sin efecto consistente).
+- Preset Garbancera: pronóstico guardado 24-nov a 7-dic-2026; ejemplo de prueba = 604 (martes 24-nov, capturas 20/45/80/120/170/215).
+
 ## Siguientes pasos posibles
 1. **Sincronizar capturas entre dispositivos:** agregar un backend pequeño (Supabase, Firebase o un Worker de Cloudflare con KV) y guardar `caps` por tienda y fecha.
 2. **Actualizar el modelo con datos reales:** cargar Round Pizza real por día (no solo el promedio de 4 semanas) y recalcular curva con peso reciente.
 3. **Backtest en la app:** mostrar el error histórico de la proyección por hora para cada tienda.
-4. **Eventos:** calendario de días especiales (Navidad, Día del Niño, Día de las Madres) con su factor.
+4. **Eventos:** ya hay factores por fecha en el perfil; falta editor en la vista Tienda y agregar fechas de 2027.
 
 ## Cómo probar
 `python3 -m http.server 8765` y `python3 tests/e2e.py`. La prueba espera /home/claude/analytix_diario.csv; cámbiale la ruta o usa tus propios datos.
